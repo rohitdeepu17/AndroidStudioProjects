@@ -297,9 +297,15 @@ public class MainActivity extends AppCompatActivity {
                 gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        Log.d(TAG, "Text detected from Image : "+gridAdapter.getImageInfo(i));
 
-                        //show dialog
+                        /*if (mProcessImageAsyncTask != null && mProcessImageAsyncTask.getStatus()!= AsyncTask.Status.FINISHED){
+                            Toast.makeText(MainActivity.this, "Image processing in progress. Please wait.", Toast.LENGTH_SHORT).show();
+                        }else */if(mDeleteImagesAsyncTask != null && mDeleteImagesAsyncTask.getStatus()!= AsyncTask.Status.FINISHED){
+                            Toast.makeText(MainActivity.this, "Image deletion in progress. Please wait.", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Log.d(TAG, "Text detected from Image : "+gridAdapter.getImageInfo(i));
+
+                            //show dialog
                         /*Dialog.Builder builder = new Dialog.Builder(MainActivity.this);
 
                         builder.setTitle("Text in this Image");*/
@@ -313,107 +319,63 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });*/
 
-                        Dialog alert = new Dialog(MainActivity.this);
-                        alert.setTitle("Image Information");
-                        alert.setContentView(R.layout.image_info_dialog);
-                        ImageView imv = (ImageView)alert.findViewById(R.id.imageViewDialog);
-                        TextView txtv = (TextView)alert.findViewById(R.id.textViewDialog);
-                        final int position = i;
+                            Dialog alert = new Dialog(MainActivity.this);
+                            alert.setTitle("Image Information");
+                            alert.setContentView(R.layout.image_info_dialog);
+                            ImageView imv = (ImageView)alert.findViewById(R.id.imageViewDialog);
+                            TextView txtv = (TextView)alert.findViewById(R.id.textViewDialog);
+                            txtv.setText("");
+                            final int position = i;
 
-                        try {
-                            Bitmap myBitmap = decodeBitmapUri(MainActivity.this, selectedUris.get(i));
-                            imv.setImageBitmap(decodeBitmapUri(MainActivity.this, selectedUris.get(i)));
+                            try {
+                                Bitmap myBitmap = decodeBitmapUri(MainActivity.this, selectedUris.get(i));
+                                imv.setImageBitmap(decodeBitmapUri(MainActivity.this, selectedUris.get(i)));
                             /*BitmapDrawable drawable = (BitmapDrawable) imv.getDrawable();
                             Bitmap myBitmap = drawable.getBitmap();*/
 
-                            Paint myRectPaint = new Paint();
-                            myRectPaint.setStrokeWidth(5);
-                            myRectPaint.setColor(Color.RED);
-                            myRectPaint.setStyle(Paint.Style.STROKE);
+                                Paint myRectPaint = new Paint();
+                                myRectPaint.setStrokeWidth(5);
+                                myRectPaint.setColor(Color.RED);
+                                myRectPaint.setStyle(Paint.Style.STROKE);
 
-                            Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
-                            Canvas tempCanvas = new Canvas(tempBitmap);
-                            tempCanvas.drawBitmap(myBitmap, 0, 0, null);
+                                Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
+                                Canvas tempCanvas = new Canvas(tempBitmap);
+                                tempCanvas.drawBitmap(myBitmap, 0, 0, null);
 
-                            try {
-                                JSONObject tempJsonObject = new JSONObject(gridAdapter.getImageInfo(position));
-                                if(tempJsonObject.has("text")){
-                                    Log.d(TAG, tempJsonObject.toString()+" <-json object, text-> : "+tempJsonObject.getString("text"));
-                                    txtv.setText(tempJsonObject.getString("text"));
-                                }else
-                                    txtv.setText("");
+                                try {
+                                    if(gridAdapter.getImageInfo(position).length()>0) {
+                                        JSONObject tempJsonObject = new JSONObject(gridAdapter.getImageInfo(position));
+                                        if (tempJsonObject.has("text")) {
+                                            Log.d(TAG, tempJsonObject.toString() + " <-json object, text-> : " + tempJsonObject.getString("text"));
+                                            txtv.setText(tempJsonObject.getString("text"));
+                                        } else {
+                                            Log.d(TAG, "else case setting text as empty string.");
+                                            txtv.setText("");
+                                        }
 
-                                int faceCount = 0;
-                                if(tempJsonObject.has("faceCount"))
-                                    faceCount = tempJsonObject.getInt("faceCount");
-                                Log.d(TAG, "face count : "+faceCount);
-                                for(int j=0; j<faceCount; j++) {
-                                    JSONObject faceObject = tempJsonObject.getJSONObject("face"+j);
-                                    double x1 = faceObject.getDouble("x1");
-                                    double y1 = faceObject.getDouble("y1");
-                                    double x2 = faceObject.getDouble("x2");
-                                    double y2 = faceObject.getDouble("y2");
-                                    Log.d(TAG,"x1,y1,x2,y2 : "+x1+","+y1+","+x2+","+y2);
-                                    tempCanvas.drawRoundRect(new RectF((float)x1, (float)y1, (float)x2, (float)y2), 2, 2, myRectPaint);
+                                        int faceCount = 0;
+                                        if (tempJsonObject.has("faceCount"))
+                                            faceCount = tempJsonObject.getInt("faceCount");
+                                        Log.d(TAG, "face count : " + faceCount);
+                                        for (int j = 0; j < faceCount; j++) {
+                                            JSONObject faceObject = tempJsonObject.getJSONObject("face" + j);
+                                            double x1 = faceObject.getDouble("x1");
+                                            double y1 = faceObject.getDouble("y1");
+                                            double x2 = faceObject.getDouble("x2");
+                                            double y2 = faceObject.getDouble("y2");
+                                            Log.d(TAG, "x1,y1,x2,y2 : " + x1 + "," + y1 + "," + x2 + "," + y2);
+                                            tempCanvas.drawRoundRect(new RectF((float) x1, (float) y1, (float) x2, (float) y2), 2, 2, myRectPaint);
+                                        }
+                                        imv.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                                imv.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
-
-                            } catch (JSONException e) {
+                            } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            alert.show();
                         }
-
-                        /*Picasso
-                                .with(MainActivity.this)
-                                .load(selectedUris.get(i))
-                                .resize(300,300)
-                                .into(imv, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        *//*BitmapDrawable drawable = (BitmapDrawable) imv.getDrawable();
-                                        Bitmap myBitmap = drawable.getBitmap();
-
-                                        Paint myRectPaint = new Paint();
-                                        myRectPaint.setStrokeWidth(5);
-                                        myRectPaint.setColor(Color.RED);
-                                        myRectPaint.setStyle(Paint.Style.STROKE);
-
-                                        Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
-                                        Canvas tempCanvas = new Canvas(tempBitmap);
-                                        tempCanvas.drawBitmap(myBitmap, 0, 0, null);
-
-                                        try {
-                                            JSONObject tempJsonObject = new JSONObject(gridAdapter.getImageInfo(position));
-                                            Log.d(TAG, tempJsonObject.toString()+" <-json object, text-> : "+tempJsonObject.getString("text"));
-                                            txtv.setText(tempJsonObject.getString("text"));
-
-                                            int faceCount = 0;
-                                            faceCount = tempJsonObject.getInt("faceCount");
-
-                                            for(int j=0; j<faceCount; j++) {
-                                                JSONObject faceObject = tempJsonObject.getJSONObject("face"+position);
-                                                double x1 = faceObject.getDouble("x1");
-                                                double y1 = faceObject.getDouble("y1");
-                                                double x2 = x1 + faceObject.getDouble("x2");
-                                                double y2 = y1 + faceObject.getDouble("y2");
-                                                tempCanvas.drawRoundRect(new RectF((float)x1, (float)y1, (float)x2, (float)y2), 2, 2, myRectPaint);
-                                            }
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }*//*
-                                    }
-
-                                    @Override
-                                    public void onError() {
-
-                                    }
-                                });*/
-
-
-                        alert.show();
                         return true;
                     }
 

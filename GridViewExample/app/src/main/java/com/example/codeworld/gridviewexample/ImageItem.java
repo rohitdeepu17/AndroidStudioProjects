@@ -17,6 +17,7 @@ public class ImageItem {
         super();
         this.imageUri = imageUri;
         this.title = title;
+        this.info = "";             //default empty
     }
 
     public Bitmap getImage() {
