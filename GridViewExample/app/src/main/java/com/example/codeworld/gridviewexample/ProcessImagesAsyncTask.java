@@ -62,6 +62,8 @@ public class ProcessImagesAsyncTask extends AsyncTask< ArrayList<Uri>, Integer,A
         switch (detectionType){
             case TEXT_ONLY:
                 for(int i=0;i<n;i++){
+                    if(isCancelled())       //if async task is cancelled, we need to check this explicitly
+                        break;
                     if(detectText(mContext, uris[0].get(i))){
                         mSelectedImages.add(i);
                     }
@@ -70,6 +72,8 @@ public class ProcessImagesAsyncTask extends AsyncTask< ArrayList<Uri>, Integer,A
                 break;
             case FACE_ONLY:
                 for(int i=0;i<n;i++){
+                    if(isCancelled())       //if async task is cancelled, we need to check this explicitly
+                        break;
                     if(detectFace(mContext, uris[0].get(i))){
                         mSelectedImages.add(i);
                     }
@@ -78,6 +82,8 @@ public class ProcessImagesAsyncTask extends AsyncTask< ArrayList<Uri>, Integer,A
                 break;
             case TEXT_AND_FACE:
                 for(int i=0;i<n;i++){
+                    if(isCancelled())       //if async task is cancelled, we need to check this explicitly
+                        break;
                     if(detectFaceAndText(mContext, uris[0].get(i))){
                         mSelectedImages.add(i);
                     }

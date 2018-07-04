@@ -614,6 +614,11 @@ public class MainActivity extends AppCompatActivity {
                 for(int i=0;i<n;i++)
                     gridAdapter.selectedPositions.add(selectedImageIndices.get(i));
                 gridView.setAdapter(gridAdapter);
+
+                if(!MyApplication.isActivityVisible()){
+                    //create a notification
+                    Log.d(TAG, "Activity not visible. Create a notification to notify the user of finishing the execution of processing");
+                }
                 //threadModifiedText.setText(msg.getData().getString("text"));
             }else if(msg.what == 1){
                 //show progress
@@ -636,6 +641,11 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                if(!MyApplication.isActivityVisible()){
+                    //create a notification
+                    Log.d(TAG, "Activity not visible. Create a notification to notify the user of finishing the execution of deleting");
+                }
             }else if(msg.what == 3){
                 int cnt = msg.getData().getInt("progressCount");
                 Log.d(TAG, "selected positions count : "+gridAdapter.selectedPositions.size());
@@ -648,12 +658,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        if (mProcessImageAsyncTask != null && mProcessImageAsyncTask.getStatus()!= AsyncTask.Status.FINISHED)
+        if (mProcessImageAsyncTask != null && mProcessImageAsyncTask.getStatus()!= AsyncTask.Status.FINISHED){
+            mProcessImageAsyncTask.releaseDetectors();
             mProcessImageAsyncTask.cancel(true);
-        Log.d(TAG, "Cancelled async task to process images on back press");
-        if (mDeleteImagesAsyncTask != null && mProcessImageAsyncTask.getStatus()!= AsyncTask.Status.FINISHED)
+            Log.d(TAG, "Cancelled async task to process images on back press");
+        }
+        if (mDeleteImagesAsyncTask != null && mDeleteImagesAsyncTask.getStatus()!= AsyncTask.Status.FINISHED) {
             mDeleteImagesAsyncTask.cancel(true);
-        Log.d(TAG, "Cancelled async task to process images on back press");
+            Log.d(TAG, "Cancelled async task to delete images on back press");
+        }
         super.onBackPressed();
     }
 
@@ -670,6 +683,18 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Cancelled async task to delete images on destroy");
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyApplication.activityResumed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MyApplication.activityPaused();
     }
 
 }
