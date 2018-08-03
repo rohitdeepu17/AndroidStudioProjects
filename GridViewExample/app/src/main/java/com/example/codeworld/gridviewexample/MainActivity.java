@@ -54,6 +54,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private GridViewAdapter gridAdapter;
     private final int PICK_IMAGE_MULTIPLE =1;
     private final int REQUEST_PERMISSIONS = 2;
-    Button mBtnDelete, mBtnProcess, mBtnToggle;
+    Button mBtnDelete, mBtnProcess, mBtnToggle, mBtnExport;
     LinearLayout llselected, llnotselected;
     ImageView mAddImages;
     Spinner spinnerCriteria;
@@ -144,6 +145,14 @@ public class MainActivity extends AppCompatActivity {
                 /*if(gridAdapter.selectedPositions.size()>0)
                     mBtnDelete.setClickable(true);*/
 
+            }
+        });
+
+        mBtnExport = (Button)findViewById(R.id.btnExportText);
+        mBtnExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                exportImagesTextToFile();
             }
         });
 
@@ -440,6 +449,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void exportImagesTextToFile() {
+        File root = Environment.getExternalStorageDirectory();
+        File gpxfile = new File(root, "text_from_images.txt");
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(gpxfile);
+            for(int position=0;position<selectedUris.size();position++){
+                try{
+                    if(gridAdapter.getImageInfo(position).length()>0) {
+                        JSONObject tempJsonObject = new JSONObject(gridAdapter.getImageInfo(position));
+                        if (tempJsonObject.has("text")) {
+                            Log.d(TAG, tempJsonObject.toString() + " <-json object, text-> : " + tempJsonObject.getString("text"));
+                            writer.append(tempJsonObject.get("text").toString()+"\n\n\n\n\n\n\n\n");
+                        } else {
+                            Log.d(TAG, "else case setting text as empty string.");
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            writer.flush();
+            writer.close();
+            Toast.makeText(MainActivity.this, "Text written to file at this path : My Files->Internal Storage in file text_from_images.txt", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void removeDeletedUris() {
