@@ -1,63 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.codeworld.gridviewexample.MainActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1">
+        android:layout_gravity="center_horizontal">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/load_images"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"/>
+            app:srcCompat="@drawable/load_images"/>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1">
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/toggleSelection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Toggle Selection"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="1"/>
+            android:layout_weight="1"
+            android:text="Toggle Selection"/>
 
         <GridView
             android:id="@+id/gridView"
             android:layout_width="match_parent"
             android:layout_height="400dp"
+            android:layout_weight="4"
             android:layout_margin="5dp"
             android:columnWidth="100dp"
             android:drawSelectorOnTop="true"
@@ -67,19 +50,13 @@
             android:verticalSpacing="5dp"
             android:horizontalSpacing="5dp"
             android:focusable="true"
-            android:clickable="true"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="9"/>
+            android:clickable="true"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <Spinner
                 android:id="@+id/spinnerCriteria"
@@ -102,52 +79,31 @@
             android:id="@+id/btndelete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete Selected Images"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="1"/>
+            android:layout_weight="1"
+            android:text="Delete Selected Images"/>
 
         <Button
             android:id="@+id/btnExportText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Export Text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="1"/>
+            android:layout_weight="1"
+            android:text="Export Text"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="1"
+            android:layout_weight="1"
             android:progress="1" />
 
         <TextView
             android:id="@+id/txtViewProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0/0"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            app:layout_constraintVertical_weight="1"/>
-
+            android:layout_weight="1"
+            android:text="0/0"/>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
